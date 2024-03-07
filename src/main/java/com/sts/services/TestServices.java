@@ -2,50 +2,63 @@ package com.sts.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import com.sts.dao.TestRepository;
 import com.sts.entities.Test;
 
 @Component
 public class TestServices {
 
-    private static List<Test> list=new ArrayList<>();
-    static{
+    @Autowired
+    private TestRepository testRepository;
 
-        // list.add(new Test(12,"Anurag","XYZ"));
-        // list.add(new Test(13,"Devanshi","ABC"));
-        // list.add(new Test(14,"Aishani","JKL"));
-        // list.add(new Test(15,"Mansi","FHKJ"));
-    }
+    // private static List<Test> list=new ArrayList<>();
+    // static{
+
+    //     // list.add(new Test(12,"Anurag","XYZ"));
+    //     // list.add(new Test(13,"Devanshi","ABC"));
+    //     // list.add(new Test(14,"Aishani","JKL"));
+    //     // list.add(new Test(15,"Mansi","FHKJ"));
+    // }
 
     public List<Test> getAllTest(){
-        return list;
+        return (List<Test>)testRepository.findAll();
     }
 
     public Test getTestById(int id){
         Test test=null;
-        test=list.stream().filter(e->e.getId()==id).findFirst().get();
+        try{
+            test=testRepository.findById(id);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
         return test;
     }
 
-    public Test addTest(Test t){
-        list.add(t);
-        return t;
+    public Test addTest(Test test){
+        return testRepository.save(test);
     }
 
-    public void deleteTest(int id){
-        list=list.stream().filter(e->e.getId()!=id).collect(Collectors.toList());
+    public Boolean deleteTest(int id){
+        Test test_id=testRepository.findById(id);
+        if(test_id==null){
+            return false;
+        }
+        else{
+            testRepository.deleteById(id);
+            return true;
+        }
     }
 
-    public void  updateTest(Test t,int id){
-        list=list.stream().map(e->{
-            if(e.getId()==id){
-                e.setName(t.getName());
-                e.setClg(t.getClg());
-            }
-            return e;
-        }).collect(Collectors.toList());
+    public Test updateTest(Test test,int id){
+        test.setId(id);
+        return testRepository.save(test);
     }
 }

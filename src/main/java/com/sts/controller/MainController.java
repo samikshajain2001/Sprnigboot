@@ -20,6 +20,7 @@ import com.sts.services.TestServices;
 @RestController
 public class MainController {
 
+
     @Autowired
     private TestServices testServices;
 
@@ -29,12 +30,18 @@ public class MainController {
         if(list.size()<=0){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.of(Optional.of(list));
+        return ResponseEntity.status(HttpStatus.CREATED).body(list);
     }
 
     @GetMapping(value="/test/{id}")
-    public Test getTest(@PathVariable("id") int id){
-        return testServices.getTestById(id);
+    public ResponseEntity<Test> getTest(@PathVariable("id") int id){
+        Test test=testServices.getTestById(id);
+        if(test==null){
+            return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        }
+        else{
+            return new ResponseEntity<>(test,HttpStatus.OK);
+        }
     }
 
     @PostMapping(value="/test")
@@ -44,13 +51,24 @@ public class MainController {
     }
 
     @DeleteMapping(value="/test/{id}")
-    public void deleteTest(@PathVariable("id") int id){
-        this.testServices.deleteTest(id);
+    public ResponseEntity<Test> deleteTest(@PathVariable("id") int id){
+        Boolean check=this.testServices.deleteTest(id);
+        if(!check){
+            return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        }
+        else{
+            return new ResponseEntity<>(null,HttpStatus.OK);
+        }
     }
 
     @PutMapping(value="/test/{id}")
-    public Test updateTest(@RequestBody Test t,@PathVariable("id") int id){
-        this.testServices.updateTest(t,id);
-        return t;
+    public ResponseEntity<Test> updateTest(@RequestBody Test t,@PathVariable("id") int id){
+        Test test=testServices.updateTest(t,id);
+        if(test==null){
+            return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        }
+        else{
+            return new ResponseEntity<>(test,HttpStatus.OK);
+        }
     }
 }
