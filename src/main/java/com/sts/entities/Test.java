@@ -1,10 +1,12 @@
 package com.sts.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -15,9 +17,13 @@ public class Test {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="test_id")
     private int id;
+
     private String name;
-    private String clg;
-    public Test(int id, String name, String clg) {
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private college clg;
+
+    public Test(int id, String name, college clg) {
         this.id = id;
         this.name = name;
         this.clg = clg;
@@ -36,10 +42,10 @@ public class Test {
     public void setName(String name) {
         this.name = name;
     }
-    public String getClg() {
+    public college getClg() {
         return clg;
     }
-    public void setClg(String clg) {
+    public void setClg(college clg) {
         this.clg = clg;
     }
     @Override
